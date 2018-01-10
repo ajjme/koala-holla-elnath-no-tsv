@@ -54,11 +54,11 @@ function displayKoalas(data) {
     newRow.append('<td>' + data[i].ready_to_transfer + '</td>');
     newRow.append('<td>' + data[i].notes + '</td>');
     if (data[i].ready_to_transfer === 'N') {
-      newRow.append('<td><button class="markReady" value="' + data[i].id + '">Ready for Transfer</button></td>');
+      newRow.append('<td><button type="button" class="markReady btn btn-primary" value="' + data[i].id + '">Ready for Transfer</button></td>');
     } else {
       newRow.append('<td></td>');
     }
-    newRow.append('<td><button class="deleteKoala" value="' + data[i].id + '">Delete</button></td>')
+    newRow.append('<td><button type="button" class="deleteKoala btn btn-danger" value="' + data[i].id + '">Delete</button></td>')
 
     $('#viewKoalas').append(newRow);
   }
