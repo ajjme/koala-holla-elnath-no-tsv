@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', function(req, res) {
     console.log('hit get koalas');
 
-    const queryText = 'SELECT * FROM koala';
+    const queryText = 'SELECT * FROM koala ORDER BY id';
     pool.query(queryText)
         .then((result) => {
             console.log('query results:', result);
