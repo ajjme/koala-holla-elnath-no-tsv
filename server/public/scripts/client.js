@@ -21,6 +21,10 @@ $( document ).ready( function(){
     // call saveKoala with the new obejct
     saveKoala( objectToSend );
   }); //end addButton on click
+
+
+  $('#viewKoalas').on('click','.markReady', markReady);
+
 }); // end doc ready
 
 function getKoalas(){
@@ -48,6 +52,11 @@ function displayKoalas(data) {
     newRow.append('<td>' + data[i].age + '</td>');
     newRow.append('<td>' + data[i].ready_to_transfer + '</td>');
     newRow.append('<td>' + data[i].notes + '</td>');
+    if (data[i].ready_to_transfer === 'N') {
+      newRow.append('<td><button class="markReady" value="' + data[i].id + '">Ready for Transfer</button></td>');
+    } else {
+      newRow.append('<td></td>');
+    }
 
     $('#viewKoalas').append(newRow);
   }
@@ -65,4 +74,17 @@ function saveKoala( newKoala ){
       getKoalas();
     } // end success
   }); //end ajax
+}
+
+function markReady() {
+  let koalaId = $(this).val();
+  $.ajax({
+    type: 'PUT',
+    url: '/koalas/' + koalaId,
+    data: { ready_to_transfer: 'Y' },
+    success: function( response) {
+      console.log('response',response);
+      getKoalas();
+    }
+  });
 }

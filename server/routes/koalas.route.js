@@ -19,6 +19,19 @@ router.get('/', function(req, res) {
         });
 });
 
+router.put('/:id', (req, res) => {
+    const queryText = 'UPDATE koala SET ready_to_transfer = $1 WHERE id = $2';
+    pool.query(queryText, [req.body.ready_to_transfer, req.params.id])
+        .then((result) => {
+            console.log('result:', result.rows);
+            res.sendStatus(200);
+        })
+        .catch((err) => {
+            console.log('error:', err);
+            res.sendStatus(500);
+        });
+});
+
 router.post('/', function(req, res) {
     const queryText = 'INSERT INTO koala (name, gender, age, ready_to_transfer, notes) VALUES ($1, $2, $3, $4, $5)';
     pool.query(queryText, [req.body.name, req.body.gender, req.body.age, req.body.ready_to_transfer, req.body.notes])
@@ -28,7 +41,7 @@ router.post('/', function(req, res) {
         })
         .catch((err) => {
             console.log('error:', err);
-            res.send(500);
+            res.sendStatus(500);
         });
 });
 
