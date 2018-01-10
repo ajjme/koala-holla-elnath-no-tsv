@@ -2,6 +2,7 @@ console.log( 'js' );
 
 $( document ).ready( function(){
   console.log( 'JQ' );
+
   // load existing koalas on page load
   getKoalas();
 
@@ -63,6 +64,8 @@ function updateKoala() {
 
         $( '#addButton' ).on( 'click', newKoala); //end addButton on click
         $( '#addButton' ).off('click', updateKoala);
+        $('#formLabel').text('Add Koala');
+        $('#addButton').text('Add Koala');
 
 
         $('#nameIn').val('');
@@ -80,6 +83,9 @@ function updateKoala() {
 }
 
 function editKoala() {
+
+  $('#addButton').text('Edit Koala');
+  $('#formLabel').text('Edit Koala');
 
   $( '#addButton' ).off( 'click', newKoala); //end addButton on click
   $( '#addButton' ).on('click', updateKoala);
