@@ -13,10 +13,10 @@ $( document ).ready( function(){
     // using a test object
     var objectToSend = {
       name: 'testName',
-      age: 'testName',
-      gender: 'testName',
-      readyForTransfer: 'testName',
-      notes: 'testName',
+      age: 1,
+      gender: 'M',
+      ready_to_transfer: 'Y',
+      notes: 'test Notes',
     };
     // call saveKoala with the new obejct
     saveKoala( objectToSend );
@@ -39,6 +39,8 @@ function getKoalas(){
 
 function displayKoalas(data) {
 
+  $('#viewKoalas').empty();
+
   for (let i = 0; i < data.length; i++) {
     let newRow = $('<tr>');
     newRow.append('<td>' + data[i].name + '</td>');
@@ -53,13 +55,14 @@ function displayKoalas(data) {
 
 function saveKoala( newKoala ){
   console.log( 'in saveKoala', newKoala );
-  // ajax call to server to get koalas
+  
   $.ajax({
     url: '/koalas',
     type: 'POST',
     data: newKoala,
-    success: function( data ){
-      console.log( 'got some koalas: ', data );
+    success: function( response ){
+      console.log( 'got some koalas: ', response );
+      getKoalas();
     } // end success
   }); //end ajax
 }
