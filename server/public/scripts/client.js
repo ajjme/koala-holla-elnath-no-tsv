@@ -22,12 +22,64 @@ $( document ).ready( function(){
     saveKoala( objectToSend );
   }); //end addButton on click
 
+  $('#viewKoalas').on('click','.editKoala', editKoala);
+  $('#editKoala').on('click','#editButton', updateKoala);
+
 
   $('#viewKoalas').on('click','.markReady', markReady);
   $('#viewKoalas').on('click','.markUnready', markUnready);
   $('#viewKoalas').on('click','.deleteKoala', deleteKoala);
 
 }); // end doc ready
+
+function editKoala() {
+  let editDiv = $('#editKoala');
+  let koalaId = $(this).val();
+
+  $.ajax({
+    url: '/koalas/' + koalaId,
+    method: 'GET',
+    success: function(response) {
+      console.log('got one Koala:', koalaId, response);
+
+      editDiv.empty();
+      editDiv.append(`
+        <h2>Edit Koala</h2>
+        <input type="text" id="nameInEdit" value="${response[0].name}" placeholder="Name">
+        <input type="text" id="ageInEdit" value="${response[0].age}" placeholder="Age">
+        <input type="text" id="genderInEdit" value="${response[0].gender}" placeholder="Gender">
+        <input type="text" id="readyForTransferInEdit" value="${response[0].ready_to_transfer}" placeholder="Transfer">
+        <input type="text" id="notesInEdit" value="${response[0].notes}" placeholder="Notes">
+        <button type="button" class="btn button success" value="${response[0].id}" id="editButton">Edit Koala</button>
+        `);
+    }
+  });
+
+}
+
+
+
+function updateKoala() {
+  let koalaId = $(this).val();
+  let objectToUpdate = {
+    name: $('#nameInEdit').val(),
+    age: $('#ageInEdit').val(),
+    gender: $('#genderInEdit').val(),
+    ready_to_transfer: $('#readyForTransferInEdit').val(),
+    notes: $('#notesInEdit').val()
+  };
+  $.ajax({
+    type: 'PUT',
+    url: '/koalas/update/' + koalaId,
+    data: objectToUpdate,
+    success: function( response) {
+      console.log('response',response);
+      getKoalas();
+      $('#editKoala').empty();
+    }
+  });
+}
+
 
 function getKoalas(){
   console.log( 'in getKoalas' );
@@ -60,6 +112,7 @@ function displayKoalas(data) {
       newRow.append('<td><button type="button" class="markUnready btn btn-warning" value="' + data[i].id + '">Mark Unready for Transfer</button></td>');
     }
     newRow.append('<td><button type="button" class="deleteKoala btn btn-danger" value="' + data[i].id + '">Delete</button></td>')
+    newRow.append('<td><button type="button" class="editKoala btn btn-primary" value="' + data[i].id + '">Edit</button></td>')
 
     $('#viewKoalas').append(newRow);
   }
