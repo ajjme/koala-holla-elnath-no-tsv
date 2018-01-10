@@ -6,7 +6,18 @@ $( document ).ready( function(){
   getKoalas();
 
   // add koala button click
-  $( '#addButton' ).on( 'click', function(){
+  $( '#addButton' ).on( 'click', newKoala); //end addButton on click
+
+  $('#viewKoalas').on('click','.editKoala', editKoala);
+
+
+  $('#viewKoalas').on('click','.markReady', markReady);
+  $('#viewKoalas').on('click','.markUnready', markUnready);
+  $('#viewKoalas').on('click','.deleteKoala', deleteKoala);
+
+}); // end doc ready
+
+function newKoala() {
     console.log( 'in addButton on click' );
     // get user input and put in an object
     // NOT WORKING YET :(
@@ -20,74 +31,26 @@ $( document ).ready( function(){
     };
     // call saveKoala with the new obejct
     saveKoala( objectToSend );
-  }); //end addButton on click
-
-  $('#viewKoalas').on('click','.editKoala', editKoala);
-  $('#editKoala').on('click','#editButton', updateKoala);
-
-
-  $('#viewKoalas').on('click','.markReady', markReady);
-  $('#viewKoalas').on('click','.markUnready', markUnready);
-  $('#viewKoalas').on('click','.deleteKoala', deleteKoala);
-
-}); // end doc ready
-
-function editKoala() {
-  let editDiv = $('#editKoala');
-  let koalaId = $(this).val();
-
-  $.ajax({
-    url: '/koalas/' + koalaId,
-    method: 'GET',
-    success: function(response) {
-      console.log('got one Koala:', koalaId, response);
-
-      editDiv.empty();
-      editDiv.append(`
-        <h2>Edit Koala</h2>
-        <input type="text" id="nameInEdit" value="${response[0].name}" placeholder="Name">
-        <input type="number" id="ageInEdit" value="${response[0].age}" placeholder="Age (number)">
-        <input type="text" id="genderInEdit" value="${response[0].gender}" placeholder="Gender (M/F)">
-        <input type="text" id="readyForTransferInEdit" value="${response[0].ready_to_transfer}" placeholder="Transfer (Y/N)">
-        <input type="text" id="notesInEdit" value="${response[0].notes}" placeholder="Notes">
-        <button type="button" class="btn button success" value="${response[0].id}" id="editButton">Edit Koala</button>
-        `);
-    }
-  });
-
-}
-
-function checkInputs(name, age, gender, ready_to_transfer) {
-  if (name == '' || age == '' || gender == '' || ready_to_transfer == '') {
-    alert('Name, age, gender, and ready to transfer must not be empty.');
-    return false;    
-  } else if (gender !== 'M' || gender !== 'F' || gender !== 'm' || gender !== 'f') {
-    alert('Gender must be M or F');
-    return false;
-  } else if (ready_to_transfer !== 'Y' || ready_to_transfer !== 'N' || ready_to_transfer !== 'y' || ready_to_transfer !== 'n') {
-    alert('"Ready to Transfer" must be Y or N');
-    return false;
-  } else {
-    return true;
-  }
 }
 
 function updateKoala() {
 
-  let name = $('#nameInEdit').val()
-  let age = $('#ageInEdit').val()
-  let gender = $('#genderInEdit').val()
-  let ready_to_transfer = $('#readyForTransferInEdit').val()
-  let notes = $('#notesInEdit').val()
-  
+  let name = $('#nameIn').val()
+  let age = $('#ageIn').val()
+  let gender = $('#genderIn').val()
+  let ready_to_transfer = $('#readyForTransferIn').val()
+  let notes = $('#notesIn').val()
+
+  console.log(gender);
   if (checkInputs(name, age, gender, ready_to_transfer)) {
     let koalaId = $(this).val();
+    console.log(koalaId);
     let objectToUpdate = {
-      name: $('#nameInEdit').val(),
-      age: $('#ageInEdit').val(),
-      gender: $('#genderInEdit').val(),
-      ready_to_transfer: $('#readyForTransferInEdit').val(),
-      notes: $('#notesInEdit').val()
+      name: name,
+      age: age,
+      gender: gender,
+      ready_to_transfer: ready_to_transfer,
+      notes: notes
     };
     $.ajax({
       type: 'PUT',
@@ -97,6 +60,17 @@ function updateKoala() {
         console.log('response',response);
         getKoalas();
         $('#editKoala').empty();
+
+        $( '#addButton' ).on( 'click', newKoala); //end addButton on click
+        $( '#addButton' ).off('click', updateKoala);
+
+
+        $('#nameIn').val('');
+        $('#ageIn').val('');
+        $('#genderIn').val('');
+        $('#readyForTransferIn').val('');
+        $('#notesIn').val('');
+        $('#addButton').val('');
       }
     });
 
@@ -104,6 +78,59 @@ function updateKoala() {
 
 
 }
+
+function editKoala() {
+
+  $( '#addButton' ).off( 'click', newKoala); //end addButton on click
+  $( '#addButton' ).on('click', updateKoala);
+
+  let editDiv = $('#editKoala');
+  let koalaId = $(this).val();
+
+  $.ajax({
+    url: '/koalas/' + koalaId,
+    method: 'GET',
+    success: function(response) {
+      console.log('got one Koala:', koalaId, response);
+
+      $('#nameIn').val(response[0].name);
+      $('#ageIn').val(response[0].age);
+      $('#genderIn').val(response[0].gender);
+      $('#readyForTransferIn').val(response[0].ready_to_transfer);
+      $('#notesIn').val(response[0].notes);
+      $('#addButton').val(response[0].id);
+
+
+      // editDiv.empty();
+      // editDiv.append(`
+      //   <h2>Edit Koala</h2>
+      //   <input type="text" id="nameInEdit" value="${response[0].name}" placeholder="Name">
+      //   <input type="number" id="ageInEdit" value="${response[0].age}" placeholder="Age (number)">
+      //   <input type="text" id="genderInEdit" value="${response[0].gender}" placeholder="Gender (M/F)">
+      //   <input type="text" id="readyForTransferInEdit" value="${response[0].ready_to_transfer}" placeholder="Transfer (Y/N)">
+      //   <input type="text" id="notesInEdit" value="${response[0].notes}" placeholder="Notes">
+      //   <button type="button" class="btn button success" value="${response[0].id}" id="editButton">Edit Koala</button>
+      //   `);
+    }
+  });
+
+}
+
+function checkInputs(name, age, gender, ready_to_transfer) {
+  if (name == '' || age == '' || gender == '' || ready_to_transfer == '') {
+    alert('Name, age, gender, and ready to transfer must not be empty.');
+    return false;    
+  } else if (gender !== 'M' && gender !== 'F' && gender !== 'm' && gender !== 'f') {
+    alert('Gender must be M or F');
+    return false;
+  } else if (ready_to_transfer !== 'Y' && ready_to_transfer !== 'N' && ready_to_transfer !== 'y' && ready_to_transfer !== 'n') {
+    alert('"Ready to Transfer" must be Y or N');
+    return false;
+  } else {
+    return true;
+  }
+}
+
 
 
 function getKoalas(){
