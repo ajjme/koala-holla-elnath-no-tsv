@@ -24,6 +24,7 @@ $( document ).ready( function(){
 
 
   $('#viewKoalas').on('click','.markReady', markReady);
+  $('#viewKoalas').on('click','.deleteKoala', deleteKoala);
 
 }); // end doc ready
 
@@ -57,6 +58,7 @@ function displayKoalas(data) {
     } else {
       newRow.append('<td></td>');
     }
+    newRow.append('<td><button class="deleteKoala" value="' + data[i].id + '">Delete</button></td>')
 
     $('#viewKoalas').append(newRow);
   }
@@ -82,6 +84,18 @@ function markReady() {
     type: 'PUT',
     url: '/koalas/' + koalaId,
     data: { ready_to_transfer: 'Y' },
+    success: function( response) {
+      console.log('response',response);
+      getKoalas();
+    }
+  });
+}
+
+function deleteKoala() {
+  let koalaId = $(this).val();
+  $.ajax({
+    type: 'DELETE',
+    url: '/koalas/' + koalaId,
     success: function( response) {
       console.log('response',response);
       getKoalas();
